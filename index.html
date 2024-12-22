@@ -1,551 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Morse code visual</title>
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <link rel="manifest" href="manifest.json">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <link rel="apple-touch-icon" href="icon-192x192.png">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f7941f;
-            margin: 0;
-            padding: 20px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            table-layout: fixed;
-        }
-
-        th,
-        td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: center;
-            width: 10%;
-        }
-
-        th {
-            background-color: #4CAF50;
-            color: white;
-        }
-
-        img {
-            width: 150px;
-            height: auto;
-        }
-
-        /* Modal styles */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(239, 64, 55, 0.9);
-            z-index: 1000;
-            cursor: pointer;
-            overflow-y: auto;
-            /* Enable scrolling */
-            -webkit-overflow-scrolling: touch;
-            /* Smooth scrolling on iOS */
-        }
-
-        .modal-content {
-            margin: auto;
-            display: block;
-            width: 504px;
-            /* Set fixed width */
-            height: 601px;
-            /* Set fixed height */
-            position: relative;
-            top: 50%;
-            transform: translateY(-50%);
-            max-width: 100%;
-            /* Ensure it fits on mobile */
-            max-height: 90vh;
-            /* Prevent image from being too tall */
-            object-fit: contain;
-            /* Maintain aspect ratio */
-        }
-
-        @media screen and (max-width: 768px) {
-            .modal-content {
-                width: auto;
-                /* Allow width to adjust on mobile */
-                height: auto;
-                /* Allow height to adjust on mobile */
-                max-width: 90%;
-                /* Leave some margin on sides */
-            }
-        }
-
-        .controls {
-            display: flex;
-            position: static;
-            transform: none;
-            margin: 0;
-            background: #2c3e50;
-            padding: 20px 20px;
-            border-radius: 10px;
-            color: white;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .controls input {
-            width: 200px;
-        }
-
-        /* Style the slider */
-        input[type="range"] {
-            -webkit-appearance: none;
-            height: 8px;
-            background: #34495e;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        /* Slider thumb */
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 20px;
-            height: 20px;
-            background: #3498db;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: background .15s ease-in-out;
-        }
-
-        input[type="range"]::-webkit-slider-thumb:hover {
-            background: #2980b9;
-        }
-
-        /* Firefox specific styles */
-        input[type="range"]::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            background: #3498db;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: background .15s ease-in-out;
-        }
-
-        input[type="range"]::-moz-range-thumb:hover {
-            background: #2980b9;
-        }
-
-        /* Style the WPM text */
-        #wpmValue {
-            font-weight: bold;
-            min-width: 70px;
-            display: inline-block;
-        }
-
-        .letter-only {
-            font-size: 36px;
-            font-weight: bold;
-            margin: 10px 0;
-            color: #2c3e50;
-        }
-
-        .header-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-
-        .header-logo {
-            max-height: 256px;
-            width: auto;
-            height: auto;
-            max-width: 50%;
-        }
-
-        td:empty {
-            border: none;
-        }
-
-        .enable-audio-btn {
-            background: #3498db;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background 0.3s;
-            position: absolute;
-            top: 20px;
-            right: 20px;
-        }
-
-        .enable-audio-btn:hover {
-            background: #2980b9;
-        }
-
-        /* Mobile-specific styles */
-        @media screen and (max-width: 768px) {
-            table {
-                table-layout: fixed;
-            }
-
-            td {
-                width: 33.33%;
-                /* Make cells take up 1/3 of the width */
-                display: table-cell;
-            }
-
-            tr td:nth-child(n+4) {
-                display: none;
-                /* Hide cells beyond the first 3 */
-            }
-
-            img {
-                width: 100%;
-                /* Make images fill their cells */
-                max-width: 120px;
-                /* But not too large */
-                height: auto;
-            }
-
-            .letter-only {
-                font-size: 24px;
-                /* Slightly smaller font for mobile */
-            }
-
-            .header-logo {
-                max-width: 100%;
-                /* Full width on mobile */
-            }
-
-            .enable-audio-btn {
-                position: static;
-                /* Remove absolute positioning */
-                display: block;
-                margin: 20px auto;
-                /* Center the button */
-                width: 200px;
-                /* Fixed width for better mobile appearance */
-            }
-
-            .header-container {
-                flex-direction: column;
-                /* Stack items vertically */
-                align-items: center;
-                gap: 10px;
-            }
-        }
-
-        /* Mobile landscape styles */
-        @media screen and (max-width: 768px) and (orientation: landscape) {
-            td {
-                width: 16.66%;
-                /* Make cells take up 1/6 of the width */
-            }
-
-            tr td:nth-child(n+4):nth-child(-n+6) {
-                display: table-cell;
-                /* Show cells 4-6 */
-            }
-
-            tr td:nth-child(n+7) {
-                display: none;
-                /* Hide cells beyond 6 */
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NFC Tag Detector</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .message {
+      margin-top: 20px;
+      font-size: 18px;
+      color: green;
+    }
+  </style>
 </head>
-
 <body>
-    <div class="header-container">
-        <img src="images/morse-code-visual.png" alt="Morse Code Visual" class="header-logo">
-        <!-- <button id="enableAudio" class="enable-audio-btn">Enable Audio</button> -->
-        <div class="controls">
-            <label for="wpmSlider">Speed (WPM):</label>
-            <input type="range" id="wpmSlider" min="5" max="25" value="15">
-            <span id="wpmValue">15 WPM</span>
-        </div>
-    </div>
-    <table id="imageTable">
-        <tbody>
-            <!-- Rows will be inserted here by JavaScript -->
-        </tbody>
-    </table>
+  <h1>NFC Tag Detector</h1>
+  <p>Click the button below to start scanning for NFC tags.</p>
+  <button id="start-scan">Start NFC Scan</button>
+  <div class="message" id="message"></div>
 
-    <!-- Add modal div -->
-    <div id="imageModal" class="modal">
-        <img class="modal-content" id="modalImage">
-    </div>
+  <script>
+    const startScanButton = document.getElementById('start-scan');
+    const messageDiv = document.getElementById('message');
 
-    <script>
-        // List of images sorted alphabetically by filename
-        const images = [
-            "Archery.png",
-            "Banjo.png",
-            "Candy.png",
-            "Dog.png",
-            "Eye.png",
-            "Firetruck.png",
-            "Giraffe.png",
-            "Hippo.png",
-            "Insect.png",
-            "Jet.png",
-            "Kite.png",
-            "Laboratory.png",
-            "Mustache.png",
-            "Net.png",
-            "Orchestra.png",
-            "Paddle.png",
-            "Quarterback.png",
-            "Robot.png",
-            "Submarine.png",
-            "Tape.png",
-            "Unicorn.png",
-            "Vacuum.png",
-            "Wand.png",
-            "X-ray.png",
-            "Yard.png",
-            "Zebra.png",
-            "1.png",
-            "2.png",
-            "3.png",
-            "4.png",
-            "5.png",
-            "6.png",
-            "7.png",
-            "8.png",
-            "9.png",
-            "0.png",
-        ];
+    if ('NDEFReader' in window) {
+      startScanButton.addEventListener('click', async () => {
+        try {
+          const ndef = new NDEFReader();
+          await ndef.scan();
 
-        // Reference to the tbody of the table
-        const tbody = document.getElementById("imageTable").querySelector("tbody");
+          messageDiv.textContent = 'Hold an NFC tag near your device.';
 
-        // Add Morse code dictionary
-        const morseCode = {
-            'A': '.-', 'B': '-...', 'C': '-.-.',
-            'D': '-..', 'E': '.', 'F': '..-.',
-            'G': '--.', 'H': '....', 'I': '..',
-            'J': '.---', 'K': '-.-', 'L': '.-..',
-            'M': '--', 'N': '-.', 'O': '---',
-            'P': '.--.', 'Q': '--.-', 'R': '.-.',
-            'S': '...', 'T': '-', 'U': '..-',
-            'V': '...-', 'W': '.--', 'X': '-..-',
-            'Y': '-.--', 'Z': '--..',
-            '0': '-----', '1': '.----', '2': '..---',
-            '3': '...--', '4': '....-', '5': '.....',
-            '6': '-....', '7': '--...', '8': '---..',
-            '9': '----.'
-        };
+          ndef.onreading = event => {
+            const { serialNumber } = event;
+            alert(`NFC Tag detected! Serial Number: ${serialNumber}`);
+            messageDiv.textContent = `Tag detected with Serial Number: ${serialNumber}`;
+          };
 
-        // Audio conte  xt and settings
-        let audioContext;
-        const frequency = 1000; // 1kHz
-        let dotDuration = wpmToDotDuration(15);
-        let dashDuration = dotDuration * 3;
-        let pauseDuration = dotDuration;
-        let letterPause = dotDuration * 3;
-
-
-        // Function to initialize audio context on user interaction
-        function initializeAudioContext() {
-            if (!isAudioInitialized) {
-                try {
-                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                    isAudioInitialized = true;
-                    console.log('Audio context initialized.');
-                    // Play a short beep to confirm audio works (optional)
-                    playTone(100);
-
-
-                    // Remove the event listener after initialization
-                    document.removeEventListener('click', initializeAudioContext);
-                    document.removeEventListener('touchstart', initializeAudioContext);
-                } catch (e) {
-                    console.error('Failed to initialize audio context:', e);
-                }
-            }
+          ndef.onreadingerror = () => {
+            alert('Error reading NFC tag. Please try again.');
+          };
+        } catch (error) {
+          alert(`NFC scan failed: ${error.message}`);
         }
-
-
-        // Function to play a tone
-        function playTone(duration) {
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-
-            oscillator.frequency.value = frequency;
-            oscillator.type = 'sine';
-
-            gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
-
-            oscillator.start();
-            oscillator.stop(audioContext.currentTime + duration / 1000);
-        }
-
-        // Add new variable for tracking audio initialization
-        let isAudioInitialized = false;
-
-        // Function to play morse code
-        async function playMorseCode(letter) {
-            if (!isAudioInitialized) return; // Don't play if audio isn't initialized
-
-            if (!audioContext) {
-                try {
-                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                } catch (e) {
-                    console.error('Web Audio API not supported:', e);
-                    return;
-                }
-            }
-
-            const morse = morseCode[letter.toUpperCase()];
-            if (!morse) return;
-
-            for (let i = 0; i < morse.length; i++) {
-                if (morse[i] === '.') {
-                    playTone(dotDuration);
-                    await new Promise(resolve => setTimeout(resolve, dotDuration + pauseDuration));
-                } else if (morse[i] === '-') {
-                    playTone(dashDuration);
-                    await new Promise(resolve => setTimeout(resolve, dashDuration + pauseDuration));
-                }
-            }
-        }
-
-        // WPM to dot duration conversion
-        function wpmToDotDuration(wpm) {
-            // Standard: PARIS = 50 units, 1 word
-            // at 1 WPM, one word takes 60 seconds
-            // so 1 unit = 1200ms at 1 WPM
-            // at N WPM, 1 unit = 1200/N ms
-            return 1200 / wpm;
-        }
-
-        // Update timing variables based on WPM
-        function updateTiming(wpm) {
-            dotDuration = wpmToDotDuration(wpm);
-            dashDuration = dotDuration * 3;
-            pauseDuration = dotDuration;
-            letterPause = dotDuration * 3;
-        }
-
-        // Attach event listeners to initialize audio on interaction
-        document.addEventListener('click', initializeAudioContext);
-        document.addEventListener('touchstart', initializeAudioContext);
-
-        // Add slider event listener
-        document.getElementById('wpmSlider').addEventListener('input', function (e) {
-            const wpm = parseInt(e.target.value);
-            document.getElementById('wpmValue').textContent = `${wpm} WPM`;
-            updateTiming(wpm);
-        });
-
-        // Function to create a table row for each image
-        function createTableRows() {
-            const isMobile = window.innerWidth <= 938;
-            const isLandscape = window.innerWidth > window.innerHeight;
-            const itemsPerRow = isMobile ? (isLandscape ? 6 : 3) : 10;
-
-            for (let i = 0; i < images.length; i += itemsPerRow) {
-                const row = document.createElement("tr");
-                const remainingItems = Math.min(itemsPerRow, images.length - i);
-                const paddingNeeded = Math.floor((itemsPerRow - remainingItems) / 2);
-
-                // Add padding cells at the start
-                for (let p = 0; p < paddingNeeded; p++) {
-                    const emptyCell = document.createElement("td");
-                    row.appendChild(emptyCell);
-                }
-
-                // Add image cells
-                for (let j = 0; j < remainingItems; j++) {
-                    const image = images[i + j];
-                    const imageCell = document.createElement("td");
-                    const imgElement = document.createElement("img");
-
-                    imgElement.src = `images/${image}`;
-                    imgElement.alt = image.split(".")[0];
-
-                    const letterOnlyDiv = document.createElement("div");
-                    letterOnlyDiv.textContent = image.split(".")[0].charAt(0);
-                    letterOnlyDiv.className = 'letter-only';
-
-                    const letterDiv = document.createElement("div");
-                    letterDiv.textContent = image.split(".")[0];
-
-                    imageCell.appendChild(letterOnlyDiv);
-                    imageCell.appendChild(imgElement);
-                    imageCell.appendChild(letterDiv);
-                    row.appendChild(imageCell);
-
-                    imgElement.addEventListener('mousedown', showModalAndPlaySound);
-                    imgElement.addEventListener('touchstart', showModalAndPlaySound);
-                }
-
-                // Add remaining padding cells if needed
-                const remainingPadding = itemsPerRow - remainingItems - paddingNeeded;
-                for (let p = 0; p < remainingPadding; p++) {
-                    const emptyCell = document.createElement("td");
-                    row.appendChild(emptyCell);
-                }
-
-                tbody.appendChild(row);
-            }
-        }
-
-        // Call function to create the table rows
-        createTableRows();
-
-        // Create a separate function for the modal and sound logic
-        function showModalAndPlaySound(event) {
-            event.preventDefault(); // Prevent default touch behavior
-            const imgElement = event.target;
-            const modal = document.getElementById('imageModal');
-            const modalImg = document.getElementById('modalImage');
-            modal.style.display = 'block';
-            modalImg.src = imgElement.src;
-
-            // Play morse code for the first letter of the image name
-            const letter = imgElement.alt.charAt(0);
-            playMorseCode(letter);
-        }
-
-        // Update the modal hide event to handle both mouse and touch
-        document.addEventListener('mouseup', hideModal);
-        document.addEventListener('touchend', hideModal);
-
-        function hideModal() {
-            const modal = document.getElementById('imageModal');
-            modal.style.display = 'none';
-        }
-
-        // Add window resize handler to rebuild table
-        let resizeTimeout;
-        window.addEventListener('resize', function () {
-            clearTimeout(resizeTimeout);
-            resizeTimeout = setTimeout(function () {
-                tbody.innerHTML = ''; // Clear existing table
-                createTableRows(); // Rebuild table
-            }, 250); // Debounce resize events
-        });
-    </script>
+      });
+    } else {
+      messageDiv.textContent = 'Web NFC is not supported on this device or browser.';
+      startScanButton.disabled = true;
+    }
+  </script>
 </body>
-
 </html>
